@@ -7,6 +7,6 @@ async function bootstrap() {
     transport: Transport.TCP,
     //options: { host: 'localhost', port: 3002 }
   });
-  await app.listen(() => console.log('First microservice I have ever deployed is listening'));
+   app.listen(() => console.log('First microservice I have ever deployed is listening'));
 }
 bootstrap();

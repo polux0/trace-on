@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { EventPattern } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
-  @MessagePattern({command: 'echo'})
-  echo(data: string): string {
-    console.log('Data has arrived: ', data);
-    return data.toUpperCase();
+  constructor(){}
+  @EventPattern('echo')
+  handleEchoMessage(data: string) {
+    console.log('Microservice received data: ' + data);
   }
 }

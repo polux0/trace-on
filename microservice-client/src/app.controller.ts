@@ -4,6 +4,7 @@ import { ClientProxy } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
+
   constructor(@Inject('ECHO_SERVICE') private readonly client: ClientProxy) {}
 
   async onApplicationBootstrap(){
@@ -17,8 +18,7 @@ export class AppController {
   }
   @Get()
   getHello(): string {
-     this.client.send('echo', new String('client says hello'));
-     console.log('This happend');
-     return 'Message: client says hello is sent';
+     this.client.emit<any>('echo', new String('client says hello'));
+     return 'Message: `client says hello` is sent';
   }
 }
