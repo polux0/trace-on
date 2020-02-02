@@ -24,9 +24,11 @@
     "@nestjs/core": "^6.10.14",
     "@nestjs/microservices": "^6.11.4",
     "@nestjs/platform-express": "^6.10.14",
+    "bignumber.js": "^9.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "web3": "^1.2.6"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.13.2",
