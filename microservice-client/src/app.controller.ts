@@ -1,4 +1,6 @@
+
 import { Controller, Get, Inject } from '@nestjs/common';
+import {Observable, from, observable} from 'rxjs';
 import { AppService } from './app.service';
 import { ClientProxy } from '@nestjs/microservices';
 
@@ -18,7 +20,10 @@ export class AppController {
   }
   @Get()
   getHello(): string {
-     this.client.emit<any>('echo', new String('client says hello'));
+     const aebre = this.client.emit<any>('echo', new String('client says hello'));
+     console.log('happend');
+     aebre.subscribe(console.log)
+
      return 'Message: `client says hello` is sent';
   }
 }
