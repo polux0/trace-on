@@ -11,7 +11,7 @@ export class AppController {
   handleEchoMessage(data: string) {
     console.log('Microservice received data: ' + data);
   }
-  @MessagePattern('BLOCK')
+  @MessagePattern('block')
   public block(block:Block): Observable<Object>{
     return from(block.transactions);
   }

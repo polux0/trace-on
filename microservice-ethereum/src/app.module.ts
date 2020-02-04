@@ -5,6 +5,6 @@ import { EthereumServer } from './ethereum.server';
 @Module({
   imports: [],
   controllers: [AppController],
-  //providers: [EthereumServer],
+  providers: [EthereumServer],
 })
 export class AppModule {}
