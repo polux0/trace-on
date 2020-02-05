@@ -11,14 +11,14 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
   }
   public listen(callback: () => void) {
     this.listenToBlocks();
-    callback();
+    //callback();
   }
   private subscribtion: any;
 
   
   private listenToBlocks(): void {
     const web3: Web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws/v3/649a556ac8104fe48085c9a1b63a15e3'));
-    this.subscribtion = web3.eth.subscribe('newBlockHeaders', (error: Error, blockHeader: BlockHeader ) =>{
+    this.subscribtion = web3.eth.subscribe('newBlockHeaders', async (error: Error, blockHeader: BlockHeader ) =>{
       if(error){
         console.error('Error: ' + error.message);
         return;
@@ -26,12 +26,32 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
       else{
         console.log('seems like everything is all right;')
         console.log('block header: ' + blockHeader.number)
-        web3.eth.getBlock(blockHeader.number).then(async(block:Block) =>{
-          console.log('transactions: ' + block)
-          return this.call('block', block).then(observable => {
-            observable.subscribe(console.log);
-          })
+
+        await setTimeout(() => console.log('timeout: '), 2000);
+        const block = await web3.eth.getBlock(blockHeader.number);
+        const transactionHashes = block.transactions;
+        
+        const transactions = transactionHashes.map(async txHash => { const actualTransactions = await web3.eth.getTransaction(txHash)
+          return actualTransactions;
         })
+
+        console.log('actual transactions: ' + transactions);
+        //const transactions = setTimeout(()=> web3.eth.getBlock(blockHeader.number).then(data => {
+          //console.log (data.transactions)
+          //return data.transactions;
+       // }), 3500)
+        //console.log('transactions from newly created block: ' + transactions);
+        //const transactionHashes = transactions.map(transaction => transactions)
+        
+
+
+        //block.then(data => console.log('block: ' + data))
+        //web3.eth.getBlock(blockHeader.number).then(async(block:Block) =>{
+          //console.log('transactions: ' + block.transactionRoot)
+          // return this.call('block', block).then(observable => {
+          //   observable.subscribe(console.log);
+          // })
+        //})
       }
     })
   }

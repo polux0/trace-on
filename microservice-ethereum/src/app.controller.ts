@@ -12,7 +12,6 @@ export class AppController {
   }
   @MessagePattern('block')
   public block(block:Block): Observable<Object>{
-    console.log(block.transactions);
     return from(block.transactions);
   }
 
