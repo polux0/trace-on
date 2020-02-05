@@ -27,15 +27,22 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
         console.log('seems like everything is all right;')
         console.log('block header: ' + blockHeader.number)
 
-        await setTimeout(() => console.log('timeout: '), 2000);
-        const block = await web3.eth.getBlock(blockHeader.number);
-        const transactionHashes = block.transactions;
+        setTimeout(async() => {
+          const block = await web3.eth.getBlock(blockHeader.number);
+          const transactionHashes = block.transactions;
+          const transactions = transactionHashes.map(txHash => web3.eth.getTransaction(txHash))
+          console.log('actual transactions: ')
+          const final = Promise.all(transactions)
+          const another = await final;
+          console.log(another);
+        }, 3000);
         
-        const transactions = transactionHashes.map(async txHash => { const actualTransactions = await web3.eth.getTransaction(txHash)
-          return actualTransactions;
-        })
+        
+        // const transactions = transactionHashes.map(async txHash => { const actualTransactions = await web3.eth.getTransaction(txHash)
+        //   return actualTransactions;
+        // })
 
-        console.log('actual transactions: ' + transactions);
+        //console.log('actual transactions: ' + transactionHashes);
         //const transactions = setTimeout(()=> web3.eth.getBlock(blockHeader.number).then(data => {
           //console.log (data.transactions)
           //return data.transactions;
