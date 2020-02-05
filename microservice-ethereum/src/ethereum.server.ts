@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
 import { Block, BlockHeader } from 'web3-eth/types';
+import { async } from 'rxjs/internal/scheduler/async';
 
 export class EthereumServer extends Server implements CustomTransportStrategy {
 
@@ -24,41 +25,33 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
         return;
       }
       else{
-        console.log('seems like everything is all right;')
         console.log('block header: ' + blockHeader.number)
 
-        setTimeout(async() => {
-          const block = await web3.eth.getBlock(blockHeader.number);
-          const transactionHashes = block.transactions;
-          const transactions = transactionHashes.map(txHash => web3.eth.getTransaction(txHash))
-          console.log('actual transactions: ')
-          const final = Promise.all(transactions)
-          const another = await final;
-          console.log(another);
-        }, 3000);
-        
-        
-        // const transactions = transactionHashes.map(async txHash => { const actualTransactions = await web3.eth.getTransaction(txHash)
-        //   return actualTransactions;
-        // })
+        // Woring example of simple process; BEGIN
 
-        //console.log('actual transactions: ' + transactionHashes);
-        //const transactions = setTimeout(()=> web3.eth.getBlock(blockHeader.number).then(data => {
-          //console.log (data.transactions)
-          //return data.transactions;
-       // }), 3500)
-        //console.log('transactions from newly created block: ' + transactions);
-        //const transactionHashes = transactions.map(transaction => transactions)
+        // setTimeout(async() => {
+        //   const block = await web3.eth.getBlock(blockHeader.number);
+        //   const transactionHashes = block.transactions;
+        //   const transactions = transactionHashes.map(txHash => web3.eth.getTransaction(txHash))
+        //   console.log('actual transactions: ')
+        //   const final = Promise.all(transactions)
+        //   const another = await final;
+        //   console.log(another);
+        // }, 3000);
+
+        // Working example of simple process; END
+
         
+        // Understand how could we implement this via Observers;
+        setTimeout(async ()=>{
+          web3.eth.getBlock(blockHeader.number).then(async(block:Block) =>{
+            return this.call('block', block).then(observable => {
+              observable.subscribe(console.log);
+            })
+          })
+        }, 3000)
 
-
-        //block.then(data => console.log('block: ' + data))
-        //web3.eth.getBlock(blockHeader.number).then(async(block:Block) =>{
-          //console.log('transactions: ' + block.transactionRoot)
-          // return this.call('block', block).then(observable => {
-          //   observable.subscribe(console.log);
-          // })
-        //})
+        // Understand how could we implement this via Observers;
       }
     })
   }
