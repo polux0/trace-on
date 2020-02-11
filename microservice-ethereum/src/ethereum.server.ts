@@ -1,4 +1,4 @@
-import {EMPTY, Observable} from 'rxjs';
+import {EMPTY, Observable, EmptyError, observable} from 'rxjs';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
@@ -14,12 +14,13 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
     this.listenToBlocks();
     //callback();
   }
+  private web3: Web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws/v3/649a556ac8104fe48085c9a1b63a15e3'));
   private subscribtion: any;
 
   
   private listenToBlocks(): void {
-    const web3: Web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws/v3/649a556ac8104fe48085c9a1b63a15e3'));
-    this.subscribtion = web3.eth.subscribe('newBlockHeaders', async (error: Error, blockHeader: BlockHeader ) =>{
+   // web3: Web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws/v3/649a556ac8104fe48085c9a1b63a15e3'));
+    this.subscribtion = this.web3.eth.subscribe('newBlockHeaders', async (error: Error, blockHeader: BlockHeader ) =>{
       if(error){
         console.error('Error: ' + error.message);
         return;
@@ -29,6 +30,7 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
 
         // Woring example of simple process; BEGIN
 
+        
         // setTimeout(async() => {
         //   const block = await web3.eth.getBlock(blockHeader.number);
         //   const transactionHashes = block.transactions;
@@ -41,22 +43,29 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
 
         // Working example of simple process; END
 
-        
         // Understand how could we implement this via Observers;
-        setTimeout(async ()=>{
-          web3.eth.getBlock(blockHeader.number).then(async(block:Block) =>{
-            return this.call('block', block).then(observable => {
-              observable.subscribe(console.log);
-            })
-          })
-        }, 3000)
 
+        setTimeout(async ()=> {
+
+          const block = await this.web3.eth.getBlock(blockHeader.number)
+          const transactions = await this.call('block', block);
+          transactions.subscribe(async transactionHash => {
+            const a = await this.getTransactionByTransactionHash(transactionHash)
+            console.log(a)
+          });
+          
+        }, 4000)
         // Understand how could we implement this via Observers;
       }
     })
   }
-  private call(pattern: string, data: Block): Promise<Observable<any>>{
 
+  private async getTransactionByTransactionHash(account: string) : Promise<Object>{
+      const transaction = await this.web3.eth.getTransaction(account);
+      return transaction.value;
+  }
+
+  private async call(pattern: string, data: Block): Promise<Observable<any>>{
     const handler: MessageHandler | undefined = this.messageHandlers.get(pattern);
     if(!handler){
       return Promise.resolve(EMPTY);
