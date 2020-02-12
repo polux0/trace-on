@@ -40,8 +40,12 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
                 console.log(r.from)
                 console.log(r.to)
                 console.log(r.value)
-              }
+              },
+              error(err) { console.error('something wrong occurred: ' + err); },
+              complete() { console.log('done'); }
             })
+          }, error =>{
+            console.log('error happend in a subscribe method; ', error)
           });
           
         }, 4000)
@@ -60,7 +64,7 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
     if(!handler){
       return Promise.resolve(EMPTY);
     }
-    return handler(EMPTY);
+    return handler(data);
 
   }
   public close() {
