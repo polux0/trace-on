@@ -35,15 +35,17 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
 
           transactions.subscribe(async transactionHash => {
             const a = await this.getTransactionByTransactionHash(transactionHash)
-            a.subscribe({
-              next(r){
-                console.log(r.from)
-                console.log(r.to)
-                console.log(r.value)
-              },
-              error(err) { console.error('something wrong occurred: ' + err); },
-              complete() { console.log('done'); }
-            })
+            a.subscribe(
+              transaction =>
+            {
+              console.log('from: ', transaction.from)
+              console.log('to: ', transaction.to)
+              console.log('value: ', transaction.value)
+            }, error =>
+            {
+              console.log('transaction must be undefined or null', error)
+            }
+            )
           }, error =>{
             console.log('error happend in a subscribe method; ', error)
           });
@@ -54,8 +56,9 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
     })
   }
 
-  private async getTransactionByTransactionHash(account: string) : Promise<Observable<Transaction>>{
+  private async getTransactionByTransactionHash(account: string) : Promise<Observable<any>>{
       const transaction = await this.web3.eth.getTransaction(account);
+      //return from(Promise.resolve(EMPTY))
       return from(Promise.resolve(transaction));
   }
 
