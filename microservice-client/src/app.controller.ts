@@ -18,12 +18,17 @@ export class AppController {
     }
     
   }
-  @Get()
-  getHello(): string {
-     const aebre = this.client.emit<any>('echo', new String('client says hello'));
-     console.log('happend');
-     aebre.subscribe(console.log)
-
-     return 'Message: `client says hello` is sent';
+  @Get('blocks')
+  getBlocks(): string {
+     const response = this.client.send<any>('blocks', new String('Requesting blocks...'));
+     response.subscribe(console.log)
+     return 'Message: `Subscribed to upcoming blocks.`';
   }
+  @Get('transactions')
+  getTransactions(): string {
+    const response = this.client.send<any>('transactions', new String('Requesting transactions...'));
+    response.subscribe(console.log)
+    return 'Message: `Subscribed to upcoming transactions.`'
+  }
+  
 }
