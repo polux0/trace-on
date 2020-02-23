@@ -1,4 +1,4 @@
-import {EMPTY, Observable, from, EmptyError, observable, empty} from 'rxjs';
+import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent} from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
@@ -22,11 +22,13 @@ private async getBlock(blockHeaderNumberOrHash: any) : Promise<any>{
   const block = await this.web3.eth.getBlock(blockHeaderNumberOrHash);
   return block;
 }
-private async getTransactionFromTransactionHash(TransactionHash: string) : Promise<any>{
+private async getTransactionFromTransactionHash(TransactionHash: any) : Promise<any>{
   return await this.web3.eth.getTransaction(TransactionHash);
 }
 public subscribeToUpcomingBlocks(): Observable<any> {
+
   const eventEmitter = this.getSubscription();
+  const anotherTry = fromEvent(eventEmitter, 'data');
   const $observable = Observable.create(async observer =>{
     eventEmitter.on('data', async blockNumber => observer.next(await this.getBlock(blockNumber.number)));
     eventEmitter.on('error', error => observer.error(error));
@@ -35,9 +37,12 @@ public subscribeToUpcomingBlocks(): Observable<any> {
 }
 public subscribeToUpcomingTransactions() : void {
   const blocks = this.subscribeToUpcomingBlocks();
-  const subscription = blocks.pipe(map(block => block.transactions))
+  const subscription = blocks.pipe(mergeMap(block => block.transactions))
   //subscription.subscribe(txHash => console.log(txHash)) 
-  subscription.subscribe(txHash => console.log(txHash))
+  subscription.subscribe(async txHash => {
+    const tx = await this.getTransactionFromTransactionHash(txHash);
+    console.log(tx)
+  })
   //return subscription;
 }
 private wait(ms) {
