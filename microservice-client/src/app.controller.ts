@@ -15,7 +15,6 @@ export class AppController {
     catch (error) {
       console.log('Error occured during connection: ', error);
     }
-    
   }
   @Get('blocks')
   getBlocks(): string {
