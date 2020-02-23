@@ -1,5 +1,5 @@
 import {EMPTY, Observable, from, EmptyError, observable, empty} from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
@@ -17,7 +17,7 @@ private subscribtion: any;
 private getSubscription(): any{
   return this.web3.eth.subscribe('newBlockHeaders')
 }
-private async getBlock(blockHeaderNumberOrHash: string) : Promise<any>{
+private async getBlock(blockHeaderNumberOrHash: any) : Promise<any>{
   await this.wait(4000);
   const block = await this.web3.eth.getBlock(blockHeaderNumberOrHash);
   return block;
@@ -25,7 +25,7 @@ private async getBlock(blockHeaderNumberOrHash: string) : Promise<any>{
 private async getTransactionFromTransactionHash(TransactionHash: string) : Promise<any>{
   return await this.web3.eth.getTransaction(TransactionHash);
 }
-public subscribeToUpcomingBlocks(): Observable<Block> {
+public subscribeToUpcomingBlocks(): Observable<any> {
   const eventEmitter = this.getSubscription();
   const $observable = Observable.create(async observer =>{
     eventEmitter.on('data', async blockNumber => observer.next(await this.getBlock(blockNumber.number)));
@@ -35,11 +35,10 @@ public subscribeToUpcomingBlocks(): Observable<Block> {
 }
 public subscribeToUpcomingTransactions() : void {
   const blocks = this.subscribeToUpcomingBlocks();
-  const transactions = blocks.pipe(map(block => block.transactions))
-  transactions.subscribe(async transaction => {
-    console.log('singular transaction transaction hash:', transaction);
-  })
-  //return;
+  const subscription = blocks.pipe(map(block => block.transactions))
+  //subscription.subscribe(txHash => console.log(txHash)) 
+  subscription.subscribe(txHash => console.log(txHash))
+  //return subscription;
 }
 private wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

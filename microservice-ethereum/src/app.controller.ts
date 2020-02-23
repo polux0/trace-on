@@ -14,13 +14,14 @@ export class AppController {
   @MessagePattern('blocks')
   handleLatestBlocks(data: string): any {
     console.log('Subscribed to upcoming blocks...');
-    const observer = this.ethereumService.subscribeToUpcomingBlocks();
-    return observer;
+    const observable = this.ethereumService.subscribeToUpcomingBlocks();
+    return observable;
   }
   @MessagePattern('transactions')
   handleLatestTransactions(data: string): any{
     console.log('Subscribed to upcoming transactions...')
-    const observer = this.ethereumService.subscribeToUpcomingTransactions();
+    const observable = this.ethereumService.subscribeToUpcomingTransactions();
+    //return observable;
   }
 
 }
