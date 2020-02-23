@@ -34,18 +34,21 @@ export class EthereumServer extends Server implements CustomTransportStrategy {
           const transactions = await this.call('block', block);
 
           transactions.subscribe(async transactionHash => {
-            const a = await this.getTransactionByTransactionHash(transactionHash)
-            a.subscribe(
-              transaction =>
-            {
-              console.log('from: ', transaction.from)
-              console.log('to: ', transaction.to)
-              console.log('value: ', transaction.value)
-            }, error =>
-            {
-              console.log('transaction must be undefined or null', error)
-            }
-            )
+
+            console.log('tx by tx');
+            console.log(transactionHash);
+            //const a = await this.getTransactionByTransactionHash(transactionHash)
+            // a.subscribe(
+            //   transaction =>
+            // {
+            //   console.log('from: ', transaction.from)
+            //   console.log('to: ', transaction.to)
+            //   console.log('value: ', transaction.value)
+            // }, error =>
+            // {
+            //   console.log('transaction must be undefined or null', error)
+            // }
+            // )
           }, error =>{
             console.log('error happend in a subscribe method; ', error)
           });
