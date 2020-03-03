@@ -1,1 +1,34 @@
-create (n: Block {number: 'number', hash: 'hash', parentHash: 'parentHash', nonce: 'nonce', sha3Uncles: 'sha3Uncles', logsBloom: 'logsBloom', transactionsRoot: 'transactionsRoot', stateRoot: 'stateRoot', miner: 'miner', difficulty: 'difficulty', totalDifficulty: 'totalDifficulty', extraData: 'extraData', size: 'size', gasLimit: 'gasLimit', gasUsed: 'gasUsed', timestamp: 'timestamp', transactions: 'transactions', uncles: 'uncles'})
+create (n: Block {number: '9574304', hash: '0xdb9b830a99c947873a4701ed3109d865d6a9b9f98fb8067b27f83a2574a3e3eb', parentHash: '0x2890869d620c4182841e2523b63de11d89b8d775558e04d7a32912b5aa12dc4f', nonce: '0x3d6baa4c067d5011', sha3Uncles: '0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347', logsBloom: 'logsBloom', transactionsRoot: 'transactionsRoot', stateRoot: 'stateRoot', miner: '0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c', difficulty: '2,333,465,489,552,124', totalDifficulty: '14,323,550,361,188,041,689,972', extraData: 'extraData', size: '35,166 bytes', gasLimit: '9,980,893', gasUsed: '9,337,886 (93.56%)', timestamp: '3 days 23 hrs ago (Feb-28-2020 08:21:42 PM +UTC)', transactions: 'transactions', uncles: 'uncles'})
+
+Block Height:
+9574304
+Timestamp:
+3 days 23 hrs ago (Feb-28-2020 08:21:42 PM +UTC)
+Transactions:
+121 transactions and 43 contract internal transactions in this block
+Mined by:
+0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c (Spark Pool) in 4 secs
+Block Reward:
+2.050984378705571173 Ether (2 + 0.050984378705571173)
+Uncles Reward:
+0
+Difficulty:
+2,333,465,489,552,124
+Total Difficulty:
+14,323,550,361,188,041,689,972
+Size:
+35,166 bytes
+Gas Used:
+9,337,886 (93.56%)
+Gas Limit:
+9,980,893
+Extra Data:
+sparkpool-eth-cn-hz1 (Hex:0x737061726b706f6f6c2d6574682d636e2d687a31)
+Hash:
+0xdb9b830a99c947873a4701ed3109d865d6a9b9f98fb8067b27f83a2574a3e3eb
+Parent Hash:
+0x2890869d620c4182841e2523b63de11d89b8d775558e04d7a32912b5aa12dc4f
+Sha3Uncles:
+0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347
+Nonce:
+0x3d6baa4c067d5011

@@ -1,5 +1,5 @@
 import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent} from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
@@ -38,7 +38,6 @@ public subscribeToUpcomingBlocks(): Observable<any> {
 public subscribeToUpcomingTransactions() : void {
   const blocks = this.subscribeToUpcomingBlocks();
   const subscription = blocks.pipe(mergeMap(block => block.transactions))
-  //subscription.subscribe(txHash => console.log(txHash)) 
   subscription.subscribe(async txHash => {
     const tx = await this.getTransactionFromTransactionHash(txHash);
     console.log(tx)
