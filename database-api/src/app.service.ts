@@ -10,7 +10,7 @@ export class AppService {
     const session = await this.neo4j.getSesion();
     return session.run('MATCH (n) RETURN n;');
   }
-  async createBlock(block: Block): Promise<any>{
+  async createBlock(): Promise<any>{
     const session = await this.neo4j.getSesion();
     return session.run(`create (b: Block {number: 9574304,
        hash: '0xdb9b830a99c947873a4701ed3109d865d6a9b9f98fb8067b27f83a2574a3e3eb',

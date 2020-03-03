@@ -7,6 +7,6 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    return this.appService.findAll();
+    return this.appService.createBlock();
   }
 }
