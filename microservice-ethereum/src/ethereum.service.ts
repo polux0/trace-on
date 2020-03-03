@@ -38,11 +38,10 @@ public subscribeToUpcomingBlocks(): Observable<any> {
 public subscribeToUpcomingTransactions() : void {
   const blocks = this.subscribeToUpcomingBlocks();
   const subscription = blocks.pipe(mergeMap(block => block.transactions))
-  subscription.subscribe(async txHash => {
+  const $observable = subscription.subscribe(async txHash => {
     const tx = await this.getTransactionFromTransactionHash(txHash);
     console.log(tx)
   })
-  //return subscription;
 }
 private wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

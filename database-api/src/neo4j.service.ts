@@ -13,7 +13,4 @@ export class Neo4jService{
     public async getSesion() : Promise<any>{
         return this.driver.session();
     }
-
-    // const driver: neo4j.Driver = neo4j.driver("bolt://localhost");
-    // const session: neo4j.Session = driver.session();
 }

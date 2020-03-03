@@ -1,3 +1,3 @@
-MATCH (n:Block), (n:Transaction) where n.number = 9574304 AND n.blockNumber = 9574304
-CREATE (n)-[r:RELTYPE]->(n)
+MATCH (b:Block), (t:Transaction) where b.number = 9574304 AND t.blockNumber = 9574304
+CREATE (b)-[r:RELTYPE]->(t)
 RETURN type(r)
