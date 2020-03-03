@@ -1,14 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { EthereumServer } from './ethereum.server';
 
 async function bootstrap() {
   
   const app = await NestFactory.createMicroservice(AppModule, {
-    strategy: new EthereumServer(),
-    options: {host: 'localhost', port: 3002}
+    options: {host: 'localhost', port: 4000}
   });
-  await app.listen(() => console.log('First microservice I have ever deployed is listening'));
+  await app.listen(() => console.log('Ethereum microservice is deployed and is listening'));
 
 }
 bootstrap();

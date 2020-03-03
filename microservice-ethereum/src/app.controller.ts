@@ -2,17 +2,26 @@ import { Controller, Inject } from '@nestjs/common';
 import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { Block } from 'web3-eth/types';
 import { Observable, from } from 'rxjs';
+import { EthereumService } from './ethereum.service';
 
 @Controller()
 export class AppController {
-  @EventPattern('echo')
-  handleEchoMessage(data: string): String {
-    console.log('Microservice received data: ' + data);
-    return "Kidanje";
+
+  private readonly ethereumService : EthereumService; 
+  constructor(){
+    this.ethereumService = new EthereumService();
   }
-  @MessagePattern('block')
-  public block(block:Block): Observable<Object>{
-    return from(block.transactions);
+  @MessagePattern('blocks')
+  handleLatestBlocks(data: string): any {
+    console.log('Subscribed to upcoming blocks...');
+    const observable = this.ethereumService.subscribeToUpcomingBlocks();
+    return observable;
+  }
+  @MessagePattern('transactions')
+  handleLatestTransactions(data: string): any{
+    console.log('Subscribed to upcoming transactions...')
+    const observable = this.ethereumService.subscribeToUpcomingTransactions();
+    //return observable;
   }
 
 }

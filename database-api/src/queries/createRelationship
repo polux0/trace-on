@@ -1,0 +1,3 @@
+MATCH (b:Block), (t:Transaction) where b.number = 9574304 AND t.blockNumber = 9574304
+CREATE (b)-[r:RELTYPE]->(t)
+RETURN type(r)

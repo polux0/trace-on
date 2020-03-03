@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { EthereumServer } from './ethereum.server';
+import { EthereumService } from './ethereum.service';
 
 @Module({
   imports: [],
   controllers: [AppController],
-  providers: [EthereumServer],
+  providers: [EthereumService],
 })
 export class AppModule {}
