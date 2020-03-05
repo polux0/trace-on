@@ -21,7 +21,7 @@ export class AppController {
   handleLatestTransactions(data: string): any{
     console.log('Subscribed to upcoming transactions...')
     const observable = this.ethereumService.subscribeToUpcomingTransactions();
-    //return observable;
+    return observable;
   }
 
 }

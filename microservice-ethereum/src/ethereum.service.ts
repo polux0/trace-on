@@ -1,5 +1,5 @@
 import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent} from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { mergeMap, map } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
@@ -35,13 +35,21 @@ public subscribeToUpcomingBlocks(): Observable<any> {
   })
   return $observable;
 }
-public subscribeToUpcomingTransactions() : void {
+public subscribeToUpcomingTransactions() : Observable<any> {
   const blocks = this.subscribeToUpcomingBlocks();
+  // const subscription = blocks.pipe(mergeMap(async block => await this.getTransactionFromTransactionHash(block.transactions)))
   const subscription = blocks.pipe(mergeMap(block => block.transactions))
-  const $observable = subscription.subscribe(async txHash => {
-    const tx = await this.getTransactionFromTransactionHash(txHash);
-    console.log(tx)
-  })
+  const aloha = subscription.pipe(map(async transactionHashes => {
+      console.log('hash by hash')
+      console.log(transactionHashes)
+      const a = await this.getTransactionFromTransactionHash(transactionHashes);
+      return Promise.resolve(a);
+  }))
+  return aloha;
+  // const $observable = subscription.subscribe(async txHash => {
+  //   const tx = await this.getTransactionFromTransactionHash(txHash);
+  //   console.log(tx)
+  // })
 }
 private wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
