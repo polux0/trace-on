@@ -1,5 +1,5 @@
-import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent} from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
+import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge} from 'rxjs';
+import { mergeMap, map, concatMap } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
@@ -23,7 +23,8 @@ private async getBlock(blockHeaderNumberOrHash: any) : Promise<any>{
   return block;
 }
 private async getTransactionFromTransactionHash(TransactionHash: any) : Promise<any>{
-  return await this.web3.eth.getTransaction(TransactionHash);
+  const transaction = await this.web3.eth.getTransaction(TransactionHash);
+  return transaction;
 }
 public subscribeToUpcomingBlocks(): Observable<any> {
 
@@ -36,22 +37,18 @@ public subscribeToUpcomingBlocks(): Observable<any> {
   return $observable;
 }
 public subscribeToUpcomingTransactions() : Observable<any> {
-  const blocks = this.subscribeToUpcomingBlocks();
-  // const subscription = blocks.pipe(mergeMap(async block => await this.getTransactionFromTransactionHash(block.transactions)))
-  const subscription = blocks.pipe(mergeMap(block => block.transactions))
-  const aloha = subscription.pipe(map(async transactionHashes => {
-      console.log('hash by hash')
-      console.log(transactionHashes)
-      const a = await this.getTransactionFromTransactionHash(transactionHashes);
-      return Promise.resolve(a);
-  }))
-  return aloha;
-  // const $observable = subscription.subscribe(async txHash => {
-  //   const tx = await this.getTransactionFromTransactionHash(txHash);
-  //   console.log(tx)
-  // })
+
+  const blockSubscription = this.subscribeToUpcomingBlocks();
+  const blocks = blockSubscription.pipe(mergeMap(block => block.transactions));
+  const transactions = blocks.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)))
+  blocks.subscribe(async txhash => {
+    const b = await this.getTransactionFromTransactionHash(txhash)
+    console.log(b)
+  })
+  return transactions;
+
 }
-private wait(ms) {
+private wait(ms) {  
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
