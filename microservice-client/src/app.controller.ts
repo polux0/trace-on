@@ -25,7 +25,6 @@ export class AppController {
   @Get('transactions')
   getTransactions(): string {
     const response = this.client.send<String>('transactions', new String('Requesting transactions...'));
-    console.log(response)
     response.subscribe(console.log)
     return 'Message: `Subscribed to upcoming transactions.`'
   }

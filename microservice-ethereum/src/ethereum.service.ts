@@ -1,7 +1,5 @@
 import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge} from 'rxjs';
 import { mergeMap, map, concatMap } from 'rxjs/operators';
-import { Injectable } from '@nestjs/common';
-import { Server, MessageHandler, CustomTransportStrategy } from '@nestjs/microservices';
 import Web3 from 'web3';
 import { Block, BlockHeader } from 'web3-eth/types';
 import {Transaction} from 'web3-core/types';
