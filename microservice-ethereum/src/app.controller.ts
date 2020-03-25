@@ -23,5 +23,11 @@ export class AppController {
     const observable = this.ethereumService.subscribeToUpcomingTransactions();
     return observable;
   }
+  @MessagePattern('latest')
+  getLatestBLock(data: string): any {
+    console.log('Requested default / hopefully latest block...')
+    const observable = this.ethereumService.getTransactionsFromBlock();
+    return observable;
+  }
 
 }

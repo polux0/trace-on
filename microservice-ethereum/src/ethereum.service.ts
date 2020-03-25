@@ -46,6 +46,11 @@ public subscribeToUpcomingTransactions() : Observable<any> {
   return transactions;
 
 }
+public async getTransactionsFromBlock(): Promise<Observable<any>>{
+  const currentBlock = await this.web3.eth.getBlockNumber();
+  console.log(currentBlock);
+  return of(currentBlock);
+}
 private wait(ms) {  
   return new Promise(resolve => setTimeout(resolve, ms));
 }
