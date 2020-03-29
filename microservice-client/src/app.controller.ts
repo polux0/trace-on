@@ -28,12 +28,24 @@ export class AppController {
     response.subscribe(console.log)
     return 'Message: `Subscribed to upcoming transactions.`'
   }
-  @Get('latest')
-  getLatestBlock(): String {
-    console.log('this happend');
-    const response = this.client.send<String>('latest', new String('Requesting latest block...'));
+  @Get('experimental')
+  experimental(): String {
+    const response = this.client.send<String>('experimental', new String('Requesting transaction from specific block...'));
     response.subscribe(console.log)
-    return 'Message: `Request default/latest block.';
+    return 'Message: `Requested transactions from specific block.';
   }
+  @Get('experimental/v1')
+  experimentalV1(): String {
+    const response = this.client.send<String>('experimentalV1', new String('Requesting transaction from specific block...'));
+    response.subscribe(console.log)
+    return 'Message: `Requested transactions from specific block.';
+  }
+  // @Get('latest')
+  // getLatestBlock(): String {
+  //   console.log('this happend');
+  //   const response = this.client.send<String>('latest', new String('Requesting latest block...'));
+  //   response.subscribe(console.log)
+  //   return 'Message: `Request default/latest block.';
+  // }
   
 }

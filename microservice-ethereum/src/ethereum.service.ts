@@ -1,5 +1,5 @@
 import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge} from 'rxjs';
-import { mergeMap, map, concatMap } from 'rxjs/operators';
+import { mergeMap, concatMap, filter } from 'rxjs/operators';
 import Web3 from 'web3';
 import { Block, BlockHeader } from 'web3-eth/types';
 import {Transaction} from 'web3-core/types';
@@ -44,12 +44,46 @@ public subscribeToUpcomingTransactions() : Observable<any> {
     console.log(b)
   })
   return transactions;
-
 }
-public async getTransactionsFromBlock(): Promise<Observable<any>>{
+public async getCurrentBlock(): Promise<Observable<any>>{
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log(currentBlock);
   return of(currentBlock);
+}
+public async experimental(blockNumberFrom: any, address: String){
+  const startTime = Date.now();
+  let filteredTransactions; 
+  const blockNumberTo = await this.web3.eth.getBlockNumber();
+  for(blockNumberFrom; blockNumberFrom < blockNumberTo; blockNumberFrom++){
+    const block = await this.getBlock(blockNumberFrom);
+    const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
+    const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
+    filteredTransactions = transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address))
+    filteredTransactions.subscribe(tx => {
+      console.log('\x1b[31m', 'Transaction by transaction\n');
+      console.log(tx);
+    })
+    console.log('end')
+    console.log(Date.now() - startTime) // 74174
+  }
+  return filteredTransactions;
+  
+}
+public async experimentalV1(blockNumberFrom: any, address: String){
+  const startTime = Date.now();
+  const blockNumberTo = await this.web3.eth.getBlockNumber();
+  for(blockNumberFrom; blockNumberFrom < blockNumberTo; blockNumberFrom++){
+    const block = await this.web3.eth.getBlock(blockNumberFrom);
+    const transactionHashes = block.transactions;
+    const transactions = transactionHashes.map(async txHash => await this.getTransactionFromTransactionHash(txHash));
+    const transactionsResolved = await Promise.all(transactions);
+    const transactionsFiltered = transactionsResolved.filter(transaction => transaction.to == address || transaction.from == address);
+    transactionsFiltered.map(tx => {
+      console.log(tx)
+    });
+    console.log('end')
+    console.log(Date.now() - startTime) // 47941
+  }
 }
 private wait(ms) {  
   return new Promise(resolve => setTimeout(resolve, ms));

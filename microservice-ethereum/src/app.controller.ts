@@ -1,7 +1,7 @@
 import { Controller, Inject } from '@nestjs/common';
 import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { Block } from 'web3-eth/types';
-import { Observable, from } from 'rxjs';
+import { Observable, from, observable } from 'rxjs';
 import { EthereumService } from './ethereum.service';
 
 @Controller()
@@ -23,11 +23,22 @@ export class AppController {
     const observable = this.ethereumService.subscribeToUpcomingTransactions();
     return observable;
   }
-  @MessagePattern('latest')
-  getLatestBLock(data: string): any {
+  @MessagePattern('experimental')
+  experimental(data: string): any {
     console.log('Requested default / hopefully latest block...')
-    const observable = this.ethereumService.getTransactionsFromBlock();
-    return observable;
+    const observable$ = this.ethereumService.experimental(9767556, new String('0x0767B75c95653D8BA2ab318dcC63CaC7Ff3e6016'));
+    return observable$;
   }
+  @MessagePattern('experimentalV1')
+  experimentalV1(data: string): any {
+    console.log('Requested default / hopefully latest block...')
+    this.ethereumService.experimentalV1(9767556, new String('0x0767B75c95653D8BA2ab318dcC63CaC7Ff3e6016'));
+  }
+  // @MessagePattern('latest')
+  // getLatestBLock(data: string): any {
+  //   console.log('Requested default / hopefully latest block...')
+  //   const observable = this.ethereumService.getTransactionsFromBlock();
+  //   return observable;
+  // }
 
 }
