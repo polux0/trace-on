@@ -1,5 +1,5 @@
-import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge} from 'rxjs';
-import { mergeMap, concatMap, filter } from 'rxjs/operators';
+import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge, forkJoin, concat} from 'rxjs';
+import { mergeMap, concatMap, filter, concatAll } from 'rxjs/operators';
 import Web3 from 'web3';
 import { Block, BlockHeader } from 'web3-eth/types';
 import {Transaction} from 'web3-core/types';
@@ -52,22 +52,17 @@ public async getCurrentBlock(): Promise<Observable<any>>{
 }
 public async experimental(blockNumberFrom: any, address: String){
   const startTime = Date.now();
-  let filteredTransactions; 
+  const observables = [];
   const blockNumberTo = await this.web3.eth.getBlockNumber();
   for(blockNumberFrom; blockNumberFrom < blockNumberTo; blockNumberFrom++){
     const block = await this.getBlock(blockNumberFrom);
     const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
     const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
-    filteredTransactions = transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address))
-    filteredTransactions.subscribe(tx => {
-      console.log('\x1b[31m', 'Transaction by transaction\n');
-      console.log(tx);
-    })
-    console.log('end')
-    console.log(Date.now() - startTime) // 74174
+    const filteredTransactions = transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address))
+    //console.log('\x1b[31m', 'Transaction by transaction\n');
+    observables.push(filteredTransactions)
   }
-  return filteredTransactions;
-  
+  return of(observables);
 }
 public async experimentalV1(blockNumberFrom: any, address: String){
   const startTime = Date.now();
