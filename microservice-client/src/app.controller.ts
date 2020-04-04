@@ -30,12 +30,15 @@ export class AppController {
   }
   @Get('experimental')
   experimental(): String {
-    const response = this.client.send<String>('experimental', new String('Requesting transaction from specific block...'));
+    console.log('experimental has been called');
+    const response = this.client.send<String>('experimental', new String('Requesting transactions from specific block'));
+    console.log(response)
     response.subscribe(console.log)
     return 'Message: `Requested transactions from specific block.';
   }
   @Get('experimental/v1')
   experimentalV1(): String {
+    console.log('experimentalV1 has been called');
     const response = this.client.send<String>('experimentalV1', new String('Requesting transaction from specific block...'));
     response.subscribe(console.log)
     return 'Message: `Requested transactions from specific block.';

@@ -27,6 +27,7 @@ export class AppController {
   experimental(data: string): any {
     console.log('Requested default / hopefully latest block...')
     const observable$ = this.ethereumService.experimental(9767556, new String('0x0767B75c95653D8BA2ab318dcC63CaC7Ff3e6016'));
+    //const observable$ = this.ethereumService.bla();
     return observable$;
   }
   @MessagePattern('experimentalV1')

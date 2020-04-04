@@ -1,9 +1,10 @@
-import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge, forkJoin, concat} from 'rxjs';
-import { mergeMap, concatMap, filter, concatAll } from 'rxjs/operators';
+import {EMPTY, Observable, from, EmptyError, observable, empty, fromEvent, of, merge, forkJoin, concat, zip} from 'rxjs';
+import { mergeMap, concatMap, filter, concatAll, toArray, combineAll, map } from 'rxjs/operators';
 import Web3 from 'web3';
 import { Block, BlockHeader } from 'web3-eth/types';
 import {Transaction} from 'web3-core/types';
 import { async } from 'rxjs/internal/scheduler/async';
+import { fork } from 'child_process';
 
 export class EthereumService  {
 
@@ -50,19 +51,36 @@ public async getCurrentBlock(): Promise<Observable<any>>{
   console.log(currentBlock);
   return of(currentBlock);
 }
-public async experimental(blockNumberFrom: any, address: String){
+public async experimental(blockNumberFrom: any, address: String): Promise<Observable<any>>{
   const startTime = Date.now();
-  const observables = [];
+  const observables: Array<Observable<any>> = [];
   const blockNumberTo = await this.web3.eth.getBlockNumber();
-  for(blockNumberFrom; blockNumberFrom < blockNumberTo; blockNumberFrom++){
+  for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
     const block = await this.getBlock(blockNumberFrom);
     const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
     const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
-    const filteredTransactions = transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address))
+    const filteredTransactions = merge(transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address)))
+
+    console.log(filteredTransactions);
+    filteredTransactions.subscribe(console.log)
     //console.log('\x1b[31m', 'Transaction by transaction\n');
-    observables.push(filteredTransactions)
+    observables.push(filteredTransactions);
+    //console.log(observables)
+
   }
-  return of(observables);
+  return merge(...observables);
+}
+public bla(): void{
+  console.log('bla has been called;');
+  let bleh: any = [];
+  for(let i = 0; i < 3; i++){
+   console.log(i);
+   bleh.push(of(i)); 
+  }
+  console.log(bleh);
+  let forkJoined = forkJoin(...bleh);
+  console.log(forkJoined)
+  forkJoined.subscribe(console.log)
 }
 public async experimentalV1(blockNumberFrom: any, address: String){
   const startTime = Date.now();
