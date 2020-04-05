@@ -53,50 +53,42 @@ public async getCurrentBlock(): Promise<Observable<any>>{
 }
 public async experimental(blockNumberFrom: any, address: String): Promise<Observable<any>>{
   const startTime = Date.now();
+  console.log(startTime)
   const observables: Array<Observable<any>> = [];
   const blockNumberTo = await this.web3.eth.getBlockNumber();
+  const anotherApproach = Observable.create(async observer => {
+    
+  })
   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
     const block = await this.getBlock(blockNumberFrom);
     const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
     const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
-    const filteredTransactions = merge(transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address)))
-
-    console.log(filteredTransactions);
+    const filteredTransactions = concat(transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address)))
     filteredTransactions.subscribe(console.log)
-    //console.log('\x1b[31m', 'Transaction by transaction\n');
     observables.push(filteredTransactions);
-    //console.log(observables)
+  }
 
-  }
-  return merge(...observables);
+  console.log(Date.now() - startTime)
+  return concat(...observables);
 }
-public bla(): void{
-  console.log('bla has been called;');
-  let bleh: any = [];
-  for(let i = 0; i < 3; i++){
-   console.log(i);
-   bleh.push(of(i)); 
-  }
-  console.log(bleh);
-  let forkJoined = forkJoin(...bleh);
-  console.log(forkJoined)
-  forkJoined.subscribe(console.log)
-}
-public async experimentalV1(blockNumberFrom: any, address: String){
+public async experimentalV1(blockNumberFrom: any, address: String): Promise<Observable<any>>{
   const startTime = Date.now();
+  const observable$: any = []
   const blockNumberTo = await this.web3.eth.getBlockNumber();
-  for(blockNumberFrom; blockNumberFrom < blockNumberTo; blockNumberFrom++){
+  for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
     const block = await this.web3.eth.getBlock(blockNumberFrom);
     const transactionHashes = block.transactions;
     const transactions = transactionHashes.map(async txHash => await this.getTransactionFromTransactionHash(txHash));
     const transactionsResolved = await Promise.all(transactions);
     const transactionsFiltered = transactionsResolved.filter(transaction => transaction.to == address || transaction.from == address);
-    transactionsFiltered.map(tx => {
-      console.log(tx)
-    });
+    const transactionsFiltered$ = from(transactionsFiltered);
+    transactionsFiltered$.subscribe(console.log)
+    console.log(transactionsFiltered$);
+    observable$.push(transactionsFiltered);
     console.log('end')
     console.log(Date.now() - startTime) // 47941
   }
+  return of(observable$);
 }
 private wait(ms) {  
   return new Promise(resolve => setTimeout(resolve, ms));
