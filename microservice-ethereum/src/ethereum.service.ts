@@ -5,6 +5,7 @@ import { Block, BlockHeader } from 'web3-eth/types';
 import {Transaction} from 'web3-core/types';
 import { async } from 'rxjs/internal/scheduler/async';
 import { fork } from 'child_process';
+import { isNullOrUndefined } from 'util';
 
 export class EthereumService  {
 
@@ -17,7 +18,7 @@ private getSubscription(): any{
   return this.web3.eth.subscribe('newBlockHeaders')
 }
 private async getBlock(blockHeaderNumberOrHash: any) : Promise<any>{
-  await this.wait(4000);
+  await this.wait(4700);
   const block = await this.web3.eth.getBlock(blockHeaderNumberOrHash);
   return block;
 }
@@ -87,32 +88,31 @@ public async getCurrentBlock(): Promise<Observable<any>>{
 //   return of(observable$);
 // }
 // working version; End;
-public async experimental(blockNumberFrom: any, address: String): Promise<Observable<any>>{
-  const startTime = Date.now();
-  console.log(startTime)
-  const observables: Array<Observable<any>> = [];
-  const blockNumberTo = await this.web3.eth.getBlockNumber();
-  const anotherApproach = Observable.create(async observer => {
+public experimental: Function = async function experimental(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
+
+  const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo; 
+  const fromToBlockNumberToLatest: any = this.subscribeToUpcomingTransactions(); 
+  const observable$: Observable<Transaction> = Observable.create(async observer => {
   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
     const block = await this.getBlock(blockNumberFrom);
     const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
     const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
     const filteredTransactions = concat(transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address)))
     filteredTransactions.subscribe(value => {
-      console.log(value);
+      //console.log(value);
       observer.next(value)
     });
   }
-  
-    observer.next('end');
+  observer.next('---------------------------------------------------------___________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1-end between requested and upcoming');
+  fromToBlockNumberToLatest.subscribe(value => observer.next(value));
 
   })
 
-  return anotherApproach;
+  return observable$;
 }
-public async experimentalV1(blockNumberFrom: any, address: String): Promise<Observable<any>>{
-  const startTime = Date.now();
-  const blockNumberTo = await this.web3.eth.getBlockNumber();
+public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
+  const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo; 
+  const fromToBlockNumberToLatest: Observable<Transaction> = this.subscribeToUpcomingTransactions(); 
   const observable$ = Observable.create(async observer => {
   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
     const block = await this.web3.eth.getBlock(blockNumberFrom);
@@ -125,10 +125,14 @@ public async experimentalV1(blockNumberFrom: any, address: String): Promise<Obse
       console.log(value);
       observer.next(value);
     })
-    //transactionsFiltered$.subscribe(console.log)
-    console.log('end')
-    console.log(Date.now() - startTime) // 47941
+    // fromToBlockNumberToLatestFiltered.subscribe(transaction => {
+    //   console.log(transaction);
+    //   observer.next(transaction);
+    // })
   }
+  fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address)).subscribe(transaction => {console.log(transaction);observer.next(transaction)})
+  observer.next('---------------------------------------------------------___________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1-end between requested and upcoming');
+
 
   })
   return observable$;

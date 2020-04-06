@@ -33,8 +33,8 @@ export class AppController {
   @MessagePattern('experimentalV1')
   experimentalV1(data: string): any {
     console.log('Requested default / hopefully latest block...')
-    const observable$ = this.ethereumService.experimentalV1(9767556, new String('0x0767B75c95653D8BA2ab318dcC63CaC7Ff3e6016'));
-    return observable$;
+    const observable$ = this.ethereumService.experimentalV1(9767556, null, new String('0x0767B75c95653D8BA2ab318dcC63CaC7Ff3e6016'));
+    return observable$
   }
   // @MessagePattern('latest')
   // getLatestBLock(data: string): any {
