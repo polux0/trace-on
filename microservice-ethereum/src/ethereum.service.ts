@@ -111,6 +111,7 @@ public experimental: Function = async function experimental(blockNumberFrom: any
   return observable$;
 }
 public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
+  console.log(await this.web3.eth.getBlockNumber());
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo; 
   const fromToBlockNumberToLatest: Observable<Transaction> = this.subscribeToUpcomingTransactions(); 
   const observable$ = Observable.create(async observer => {
@@ -130,7 +131,13 @@ public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: S
     //   observer.next(transaction);
     // })
   }
-  fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address)).subscribe(transaction => {console.log(transaction);observer.next(transaction)})
+  observer.next('---------------------------------------------------------___________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1-end between requested and upcoming');
+
+  const fromToBlockNumberToLatestFiltered = fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address));
+  fromToBlockNumberToLatest.subscribe(transaction => {
+    console.log(transaction.blockNumber);
+    observer.next(transaction);
+  })
   observer.next('---------------------------------------------------------___________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1-end between requested and upcoming');
 
 
