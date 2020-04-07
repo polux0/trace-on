@@ -122,8 +122,10 @@ public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: S
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log('block number at the start of execution: ' + currentBlock);
   const currentBlockTransactions = await this.getTransactionsFromBlock(currentBlock);
-  const fromToBlockNumberToLatest: Observable<Transaction> = this.subscribeToUpcomingTransactions();
-  fromToBlockNumberToLatest.subscribe(console.log)
+  const test: any = [];
+  this.subscribeToUpcomingTransactions().pipe(take(1)).subscribe(transaction => test.push(transaction));
+  const fromToBlockNumberToLatest: any = this.subscribeToUpcomingTransactions();
+  //fromToBlockNumberToLatest.subscribe(console.log)
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo;  
   const observable$ = Observable.create(async observer => {
   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
@@ -138,18 +140,21 @@ public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: S
     //   observer.next(transaction);
     // }) 9821092 
   }
-  observer.next('-----------------------------------------------end between requested: current is next;');
   const currentBlockTransactions$ = from(currentBlockTransactions);
-  currentBlockTransactions$.subscribe(transaction => {
-    //console.log(transaction);
+  currentBlockTransactions$.pipe(take(1)).subscribe(transaction => {
+    console.log(transaction);
     observer.next(transaction)
   })
+  observer.next('-----------------------------------------------end between requested: current is next;');
+  console.log('cao cao cao cao cao bacane');
+  console.log(test);
+  console.log('\n', 'caocaocaocoaocoao')
   observer.next('------------------------------------------------end between requested and current: upcoming are next;');
-  const fromToBlockNumberToLatestFiltered = fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address));
-  fromToBlockNumberToLatest.pipe(take(3)).subscribe(transaction => {
-    console.log(transaction.blockNumber);
-    observer.next(transaction);
-  })
+  // const fromToBlockNumberToLatestFiltered = fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address));
+  // fromToBlockNumberToLatest.pipe(take(3)).subscribe(transaction => {
+  //   console.log(transaction.blockNumber);
+  //   observer.next(transaction);
+  // })
 
   })
   return observable$;
