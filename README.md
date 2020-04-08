@@ -1,2 +1,2 @@
 # trace-on
-Repository for puprose of technical challenge
+Creating infrastructure for data analysis of Ethereum blockchain
