@@ -43,6 +43,14 @@ public subscribeToUpcomingBlocks(): Observable<any> {
   })
   return $observable;
 }
+public subscribeToUpcomingBlocksWithCache(numberOfBlocksToCache: number): Observable<any>{
+  
+  const eventEmitter = this.getSubscription();
+  const $observable = new ReplaySubject(numberOfBlocksToCache);
+  eventEmitter.on('data', async blockNumber => $observable.next(await this.getBlock(blockNumber.number)))
+  eventEmitter.on('error', async error => $observable.error(error));
+  return $observable;
+}
 public subscribeToUpcomingTransactions() : Observable<any> {
 
   const blockSubscription = this.subscribeToUpcomingBlocks();
@@ -50,6 +58,14 @@ public subscribeToUpcomingTransactions() : Observable<any> {
   const transactions = blocks.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)))
   return transactions;
 }
+public subscribeToUpcomingTransactionsWithCache(numberOfBlocksToCache: number): Observable<any>{
+  
+  const blockSubscription = this.subscribeToUpcomingBlocksWithCache(numberOfBlocksToCache);
+  const blocks = blockSubscription.pipe(mergeMap(block => block.transactions));
+  const transactions = blocks.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)))
+  return transactions;
+
+} 
 public async getCurrentBlock(): Promise<Observable<any>>{
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log(currentBlock);
@@ -118,14 +134,14 @@ public experimental: Function = async function experimental(blockNumberFrom: any
   return observable$;
 }
 public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
-  const transactionsReplaySubject$ = new ReplaySubject(20);
+  //const transactionsReplaySubject$ = new ReplaySubject(20);
   // actually is good -> observer just start emitting when it's called; we need it to work in background and store immediately; 
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log('block number at the start of execution: ' + currentBlock);
   const currentBlockTransactions = await this.getTransactionsFromBlock(currentBlock);
-  const fromToBlockNumberToLatest: any = this.subscribeToUpcomingTransactions().subscribe(transaction => transactionsReplaySubject$.next(transaction));
-  transactionsReplaySubject$.next(1);
-  transactionsReplaySubject$.next(2);
+  const transactionsReplaySubject$: any = this.subscribeToUpcomingTransactionsWithCache(20);
+  //transactionsReplaySubject$.next(1);
+  //transactionsReplaySubject$.next(2);
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo;  
   const observable$ = Observable.create(async observer => {
   for(blockNumberFrom; blockNumberFrom < 9767557; blockNumberFrom++){
@@ -144,7 +160,7 @@ public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: S
   })
   observer.next('------------------------------------------------end between requested and current: upcoming are next;');
   // const fromToBlockNumberToLatestFiltered = fromToBlockNumberToLatest.pipe(filter(transaction => transaction.from == address || transaction.to == address));
-  transactionsReplaySubject$.subscribe(transaction => {
+  transactionsReplaySubject$.pipe(take(1)).subscribe(transaction => {
     console.log(transaction);
     observer.next(transaction);
   })
