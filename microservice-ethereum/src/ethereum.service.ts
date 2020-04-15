@@ -139,7 +139,7 @@ public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: S
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log('block number at the start of execution: ' + currentBlock);
   const currentBlockTransactions = await this.getTransactionsFromBlock(currentBlock);
-  const transactionsReplaySubject$: any = this.subscribeToUpcomingTransactionsWithCache(20);
+  const transactionsReplaySubject$: any = this.subscribeToUpcomingTransactionsWithCache(2000);
   //transactionsReplaySubject$.next(1);
   //transactionsReplaySubject$.next(2);
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo;  
