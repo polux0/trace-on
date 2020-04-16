@@ -6,7 +6,7 @@ import {Transaction} from 'web3-core/types';
 import { async } from 'rxjs/internal/scheduler/async';
 import { fork } from 'child_process';
 import { isNullOrUndefined } from 'util';
-
+ 
 export class EthereumService  {
 
 constructor(){}
@@ -34,7 +34,6 @@ private async getTransactionsFromBlock(blockNumber: number): Promise<any>{
   return transactionsResolved;
 }
 public subscribeToUpcomingBlocks(): Observable<any> {
-
   const eventEmitter = this.getSubscription();
   const anotherTry = fromEvent(eventEmitter, 'data');
   const $observable = Observable.create(async observer =>{
@@ -44,7 +43,6 @@ public subscribeToUpcomingBlocks(): Observable<any> {
   return $observable;
 }
 public subscribeToUpcomingBlocksWithCache(numberOfBlocksToCache: number): Observable<any>{
-  
   const eventEmitter = this.getSubscription();
   const $observable = new ReplaySubject(numberOfBlocksToCache);
   eventEmitter.on('data', async blockNumber => $observable.next(await this.getBlock(blockNumber.number)))
@@ -52,67 +50,23 @@ public subscribeToUpcomingBlocksWithCache(numberOfBlocksToCache: number): Observ
   return $observable;
 }
 public subscribeToUpcomingTransactions() : Observable<any> {
-
   const blockSubscription = this.subscribeToUpcomingBlocks();
   const blocks = blockSubscription.pipe(mergeMap(block => block.transactions));
   const transactions = blocks.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)))
   return transactions;
 }
 public subscribeToUpcomingTransactionsWithCache(numberOfBlocksToCache: number): Observable<any>{
-  
   const blockSubscription = this.subscribeToUpcomingBlocksWithCache(numberOfBlocksToCache);
   const blocks = blockSubscription.pipe(mergeMap(block => block.transactions));
   const transactions = blocks.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)))
   return transactions;
-
 } 
 public async getCurrentBlock(): Promise<Observable<any>>{
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log(currentBlock);
   return of(currentBlock);
 }
-// working version; Begin;
-// public async experimental(blockNumberFrom: any, address: String): Promise<Observable<any>>{
-//   const startTime = Date.now();
-//   console.log(startTime)
-//   const observables: Array<Observable<any>> = [];
-//   const blockNumberTo = await this.web3.eth.getBlockNumber();
-//   const anotherApproach = Observable.create(async observer => {})
-//   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
-//     const block = await this.getBlock(blockNumberFrom);
-//     const transactionHashes = of(block).pipe(mergeMap(block => block.transactions));
-//     const transactions = transactionHashes.pipe(concatMap(async txHash => await this.getTransactionFromTransactionHash(txHash)));
-//     const filteredTransactions = concat(transactions.pipe(filter(transaction => transaction.from == address || transaction.to == address)))
-//     filteredTransactions.subscribe(console.log)
-//     observables.push(filteredTransactions);
-//   }
-
-//   console.log(Date.now() - startTime)
-//   return concat(...observables);
-// }
-
-// public async experimentalV1(blockNumberFrom: any, address: String): Promise<Observable<any>>{
-//   const startTime = Date.now();
-//   const observable$: any = []
-//   const blockNumberTo = await this.web3.eth.getBlockNumber();
-//   for(blockNumberFrom; blockNumberFrom < 9767569; blockNumberFrom++){
-//     const block = await this.web3.eth.getBlock(blockNumberFrom);
-//     const transactionHashes = block.transactions;
-//     const transactions = transactionHashes.map(async txHash => await this.getTransactionFromTransactionHash(txHash));
-//     const transactionsResolved = await Promise.all(transactions);
-//     const transactionsFiltered = transactionsResolved.filter(transaction => transaction.to == address || transaction.from == address);
-//     const transactionsFiltered$ = from(transactionsFiltered);
-//     transactionsFiltered$.subscribe(console.log)
-//     console.log(transactionsFiltered$);
-//     observable$.push(transactionsFiltered);
-//     console.log('end')
-//     console.log(Date.now() - startTime) // 47941
-//   }
-//   return of(observable$);
-// }
-// working version; End;
 public experimental: Function = async function experimental(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
-
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo; 
   const fromToBlockNumberToLatest: any = this.subscribeToUpcomingTransactions(); 
   const observable$: Observable<Transaction> = Observable.create(async observer => {
@@ -134,14 +88,10 @@ public experimental: Function = async function experimental(blockNumberFrom: any
   return observable$;
 }
 public async experimentalV1(blockNumberFrom: any, blockNumberTo: any, address: String): Promise<Observable<any>>{
-  //const transactionsReplaySubject$ = new ReplaySubject(20);
-  // actually is good -> observer just start emitting when it's called; we need it to work in background and store immediately; 
   const currentBlock = await this.web3.eth.getBlockNumber();
   console.log('block number at the start of execution: ' + currentBlock);
   const currentBlockTransactions = await this.getTransactionsFromBlock(currentBlock);
   const transactionsReplaySubject$: any = this.subscribeToUpcomingTransactionsWithCache(2000);
-  //transactionsReplaySubject$.next(1);
-  //transactionsReplaySubject$.next(2);
   const to: Number = blockNumberTo === isNullOrUndefined ? await this.web3.eth.getBlockNumber() : blockNumberTo;  
   const observable$ = Observable.create(async observer => {
   for(blockNumberFrom; blockNumberFrom < 9767557; blockNumberFrom++){
