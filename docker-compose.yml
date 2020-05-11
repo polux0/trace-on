@@ -1,1 +1,28 @@
-version: 3
+version: '3'
+services:
+    microservice-ethereum:
+        build:
+            context: ./microservice-ethereum
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 4000:4000
+        volumes: 
+            - ./src:/app
+    microservice-client:
+        build:
+            context: ./microservice-client
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 3001:3001
+        volumes: 
+            - ./src:/app
+        depends_on:
+            - microservice-ethereum
+    database-api:
+        build:
+            context: ./microservice-ethereum
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 7200:7200
+        volumes: 
+            - ./src:/app        
