@@ -5,25 +5,38 @@ services:
             context: ./microservice-ethereum
             dockerfile: Dockerfile.dev  
         ports:
-            - "4000:4000"
+            - 4000:4000
         volumes: 
             - /app/node_modules
-            - ./microservice-ethereum/src:/app
-    # microservice-client:
-    #     build:
-    #         context: ./microservice-client
-    #         dockerfile: Dockerfile.dev  
-    #     ports:
-    #         - 3001:3001
-    #     volumes: 
-    #         - ./src:/app
-    #     depends_on:
-    #         - microservice-ethereum
-    # database-api:
-    #     build:
-    #         context: ./database-api
-    #         dockerfile: Dockerfile.dev  
-    #     ports:
-    #         - 7200:7200
-    #     volumes: 
-    #         - ./src:/app        
+            - ./microservice-ethereum/src:/app/src
+    microservice-client:
+        build:
+            context: ./microservice-client
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 3001:3001
+        volumes: 
+            - /app/node_modules
+            - ./microservice-client/src:/app/src
+        depends_on:
+            - microservice-ethereum
+    neo4j: 
+        image: neo4j:latest
+        ports:
+            - 7474:7474
+            - 7473:7473
+            - 7687:7687
+        volumes: 
+            - ./data/:/data
+            - ./logs/:/logs
+    database-api:
+        build:
+            context: ./database-api
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 7200:7200
+        volumes:
+            - /app/node_modules
+            - ./database-api/src:/app/src
+        depends_on:
+            - neo4j 

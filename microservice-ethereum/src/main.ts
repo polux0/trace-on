@@ -15,7 +15,7 @@ async function bootstrap() {
   // });
   // testing if docker is set up right
   const app = await NestFactory.createMicroservice(AppModule, {
-    options: {host: 'localhost', port: 4000}
+    options: {host: 'microservice-ethereum', port: 4000}
   });
   await app.listen(() => console.log('Ethereum microservice is deployed and is listening'));
 
