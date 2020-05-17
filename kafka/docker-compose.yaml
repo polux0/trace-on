@@ -6,6 +6,19 @@ services:
         restart: always
         ports: 
             - 2181:2181
-        volumes: 
+        volumes:
+            - "/data"
+            - "/data/datalog"
         environment: 
             - ALLOW_ANONYMOUS_LOGIN=yes
+            - ZOO_ADMINSERVER_ENABLED=true
+    kafka:
+        image: 'bitnami/kafka:latest'
+        ports:
+            - '9092:9092'
+        environment:
+            - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeper:2181
+            - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+            - ALLOW_PLAINTEXT_LISTENER=yes
+        depends_on:
+            - zookeper
