@@ -1,0 +1,8 @@
+version: '3'
+services:
+    microservice-ethereum:
+        build:
+            context: ./microservice-ethereum
+            dockerfile: Dockerfile.dev  
+        ports:
+            - 4000:4000
