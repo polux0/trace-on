@@ -30,7 +30,8 @@ services:
         volumes: 
             - /app/node_modules
             - ./microservice-ethereum/src:/app/src
-        depends_on: kafka
+        depends_on: 
+            - kafka
     microservice-client:
         build:
             context: ./microservice-client
