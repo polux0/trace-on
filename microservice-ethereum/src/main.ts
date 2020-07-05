@@ -9,7 +9,7 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers:['kafka']
+        brokers:['kafka:9092']
     }
   }
   });
