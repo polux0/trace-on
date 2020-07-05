@@ -50,8 +50,8 @@ services:
             - 7473:7473
             - 7687:7687
         volumes: 
-            - ./data/:/data
-            - ./logs/:/logs
+            - .database/data/:/data
+            - .database/logs/:/logs
     database-api:
         build:
             context: ./database-api
