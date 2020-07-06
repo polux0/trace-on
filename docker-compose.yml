@@ -17,7 +17,7 @@ services:
             - '9092:9092'
         environment:
             - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeper:2181
-            - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+            - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://trace-on_kafka_1:9092
             - ALLOW_PLAINTEXT_LISTENER=yes
         depends_on:
             - zookeper
