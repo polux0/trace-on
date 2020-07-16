@@ -10,6 +10,7 @@ export class AppController {
 
   async onApplicationBootstrap(){
     try {
+      //this.client.subscribeToResponseOf('hero.kill.dragon');
       await this.client.connect();
     } 
     catch (error) {
