@@ -27,7 +27,6 @@
     "amqp-connection-manager": "^3.2.0",
     "amqplib": "^0.6.0",
     "bignumber.js": "^9.0.0",
-    "kafkajs": "^1.12.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.4",

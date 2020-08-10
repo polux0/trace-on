@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/common/enums/transport.enum';
-
 async function bootstrap() {
 
   // previous kafka setup begin; 
@@ -15,10 +14,12 @@ async function bootstrap() {
   // });
   // previous kafka setup end;
   const app = await NestFactory.createMicroservice(AppModule, {
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        brokers:['trace-on_kafka_1:9092']
+    transport: Transport.RMQ,
+    options: {  
+      urls: ['ampq://guest:guest@localhost:5672'],
+      queue: 'requestTransactions',
+      queueOptions: {
+        durable: true
     }
   }
   });

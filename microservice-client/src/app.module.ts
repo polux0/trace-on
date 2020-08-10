@@ -10,17 +10,15 @@ import { Transport, ClientsModule } from '@nestjs/microservices'
     ClientsModule.register([
       {
         name: 'ECHO_SERVICE', 
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: {
-            clientId: 'ethereum-client',
-            brokers: ['trace-on_kafka_1:9092']
+          urls: ['amqp://guest:guest@localhost:5672'],
+          queue: 'requestTransactions',
+          queueOptions: {
+            durable: true
+            },
           },
-          consumer: {
-            groupId: 'ethereum-client-consumer'
-          }
-        }
-      }
+        },
     ]),
   ],
   controllers: [AppController],
